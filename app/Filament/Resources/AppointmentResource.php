@@ -36,14 +36,9 @@ class AppointmentResource extends Resource
                     ->label('Patient')
                     ->relationship('patient', 'name')
                     ->required(),
-                Forms\Components\Select::make('user_id')
-                    ->label('User')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Forms\Components\Select::make('clinic_id')
-                    ->label('Clinic')
-                    ->relationship('clinic', 'name')
-                    ->required(),
+                Forms\Components\Hidden::make('user_id')
+                    ->default(fn() => auth()->user()->id),
+
                 Forms\Components\DateTimePicker::make('appointment_date')
                     ->required(),
                 Forms\Components\TimePicker::make('appointment_time')

@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ClinicResource\Pages;
 use App\Filament\Resources\ClinicResource\RelationManagers;
 use App\Models\Clinic;
+use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,6 +20,8 @@ class ClinicResource extends Resource
     protected static ?string $model = Clinic::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static bool $isScopedToTenant = false;
 
     public static function form(Form $form): Form
     {
@@ -53,6 +57,22 @@ class ClinicResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('AddUser')
+                    ->icon('heroicon-o-plus')
+                    ->form(function () {
+                        return [
+                            Forms\Components\Select::make('selectUsers')
+                                ->label('User')
+                                ->multiple()
+                                ->required()
+                                ->options(fn() => User::pluck('name', 'id')->toArray())
+                        ];
+                    })
+                    ->action(function (array $data, Clinic $record) {
+                        $record->users()->syncWithoutDetaching($data['selectUsers']);
+                    }),
+
+
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
